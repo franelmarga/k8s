@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fanout-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: global.fran.test
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: apache-service
+            port:
+              number: 8000
+      - pathType: Prefix
+        path: "/docs"
+        backend:
+          service:
+            name: tomcat-service
+            port:
+              number: 8080
