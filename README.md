@@ -18,13 +18,13 @@ To get started with this repository, you'll want to have a basic understanding o
 
 ### Kubernetes YAML Examples
 
-Navigate to the `yaml_examples` directory to find a collection of YAML templates. These templates can be used to deploy standard Kubernetes resources such as Deployments, Services, and Ingress controllers.
+Navigate to the `yaml_examples` directory to find a collection of YAML templates. These templates can be used to deploy standard Kubernetes resources such as Deployments, Services, and Ingress.
 
 ### Tools for Deployment
 
 The `tools` directory contains Terraform and Ansible scripts necessary to provision and manage the infrastructure on AWS EC2.
 
-1. **Terraform**: Change to the `tools/terraform` directory and update the `variables.tf` with your AWS credentials and preferred settings.
+1. **Terraform**: Change to the `tools/terraform` directory and deploy the cluster. AWS credentials needed to be configured (you can check with `aws sts get-caller-identity`).
 
 2. **Ansible**: After your infrastructure is provisioned, use the Ansible playbooks in the `tools/ansible` directory to configure your Kubernetes cluster.
 
