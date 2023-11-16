@@ -1,0 +1,74 @@
+---
+- name: Create containerd config file
+  file:
+    path: "/etc/modules-load.d/containerd.conf"
+    state: "touch"
+
+- name: Add conf for containerd
+  blockinfile:
+    path: "/etc/modules-load.d/containerd.conf"
+    block: |
+          overlay
+          br_netfilter
+
+- name: modprobe
+  shell: |
+          sudo modprobe overlay
+          sudo modprobe br_netfilter
+
+- name: Set system configurations for Kubernetes networking
+  file:
+    path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    state: "touch"
+
+- name: Add conf for containerd
+  blockinfile:
+    path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    block: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+
+- name: Apply new settings
+  command: sudo sysctl --system
+
+- name: install containerd
+  shell: |
+          sudo yum install -y containerd
+          sudo mkdir -p /etc/containerd
+          sudo containerd config default | sudo tee /etc/containerd/config.toml
+          sudo systemctl restart containerd
+
+- name: disable swap
+  shell: |
+          sudo swapoff -a
+          sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+- name: install and configure dependencies
+  shell: |
+          sudo yum install -y gnupg2
+          sudo rpm --import https://packages.cloud.google.com/yum/doc/yum-key.gpg
+          sudo rpm --import https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Create kubernetes repo file
+  file:
+    path: "/etc/yum.repos.d/kubernetes.repo"
+    state: "touch"
+
+- name: Add K8s Source
+  blockinfile:
+    path: "/etc/yum.repos.d/kubernetes.repo"
+    block: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+          https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: install kubernetes
+  shell: |
+          sudo yum install -y kubelet-1.28.0-0 kubeadm-1.28.0-0 kubectl-1.28.0-0
+          sudo systemctl enable kubelet.service
