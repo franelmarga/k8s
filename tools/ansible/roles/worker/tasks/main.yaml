@@ -1,2 +1,3 @@
-- name: Join worker node to Kubernetes cluster
-  command: kubeadm join 192.168.1.100:6443 --token YOUR_TOKEN --discovery-token-ca-cert-hash YOUR_CA_CERT_HASH
+- name: Ejecutar comando de unión de Kubernetes
+  become_user: ec2-user
+  shell: "{{ kubernetes_join_command.stdout }}"

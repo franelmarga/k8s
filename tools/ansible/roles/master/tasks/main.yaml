@@ -1,11 +1,8 @@
 - name: Initialize the cluster
-  shell: kubeadm init --pod-network-cidr=10.244.0.0/16
-  args:
-    chdir: $HOME
-    creates: cluster_initialized.txt
+  become: yes
+  shell: kubeadm init
 
 - name: Create .kube directory
-  become: yes
   become_user: ec2-user
   file:
     path: "~/.kube"
@@ -16,22 +13,24 @@
   become: yes
   copy:
     src: /etc/kubernetes/admin.conf
-    dest: ~/.kube/config
+    dest: /home/ec2-user/.kube/config
     remote_src: yes
+    owner: ec2-user
+    mode: 0644
 
 - name: Install Pod network
   become: yes
   become_user: ec2-user
   shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
   args:
-    chdir: $HOME
+    chdir: /home/ec2-user
 
-- name: Get the token for joining the worker nodes
+- name: Obtener token de join de Kubernetes
   become: yes
-  become_user: ec2-user
   shell: kubeadm token create --print-join-command
   register: kubernetes_join_command
 
-- name: Copy join command to local file
-  become: yes
-  local_action: copy content="" dest="./kubernetes_join_command" mode=0777
+
+
+
+
