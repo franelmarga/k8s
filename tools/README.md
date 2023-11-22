@@ -8,7 +8,7 @@ This directory contains various utility scripts and tools to help manage and con
 
 - `terraform`: This subdirectory includes Terraform configurations for provisioning a basic Kubernetes cluster on AWS. The configuration is set to create one master node and two worker nodes, all of which are `t2.micro` instances, to form the Kubernetes cluster.
 
-## Using the Terraform Scripts
+## Configuring the cluster
 
 To use the Terraform scripts to deploy your Kubernetes cluster on AWS, follow these steps:
 
@@ -20,3 +20,7 @@ To use the Terraform scripts to deploy your Kubernetes cluster on AWS, follow th
    terraform plan
    terraform apply
    ```
+2. **Configuring Kubernetes with Ansible**:
+   Terraform will give 3 outputs IPs you will need to replace in inventory.ini, and provide the path to the corresponding .pem key files for the instances that have been created.
+
+   Execute `ansible-playbook -i inventory.ini main.yaml` to configure the kubernetes cluster. IPs and .pem path needs to be replaced in `inventory.ini`.
