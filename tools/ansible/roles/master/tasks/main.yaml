@@ -25,10 +25,6 @@
   args:
     chdir: /home/ec2-user
 
-- name: Obtener token de join de Kubernetes
-  become: yes
-  shell: kubeadm token create --print-join-command
-  register: kubernetes_join_command
 
 
 

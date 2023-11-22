@@ -1,3 +1,8 @@
-- name: Ejecutar comando de unión de Kubernetes
-  become_user: ec2-user
+- name: Getting from master node join command
+  shell: kubeadm token create --print-join-command
+  delegate_to: master
+  register: kubernetes_join_command
+
+- name: Execute command in workers
   shell: "{{ kubernetes_join_command.stdout }}"
+  when: kubernetes_join_command is defined
